@@ -8,3 +8,7 @@
   margin: 0;
   scroll-behavior: smooth;
 }
+
+html {
+  font-family: "Merriweather", serif;
+}
