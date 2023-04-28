@@ -1,4 +1,5 @@
 import React from 'react';
+import GpsBar from '../components/GpsBar';
 
 const Home = () => {
   const [input, setInput] = React.useState<string>('');
@@ -13,17 +14,19 @@ const Home = () => {
   };
 
   return (
-    <div className="text-white w-full flex flex-col justify-center items-center text-xl">
-      <h1 className="text-center text-2xl font-bold mt-10 font-merriweatherSans">
-        Welcome to
-        <br /> <span className="font-merriweather text-5xl font-normal"> Park Inn</span>
-      </h1>
-      <p className="w-52 text-center mt-5 mb-10">Your reliable solution for stress free Parking </p>
+    <div className="text-white w-full flex flex-col justify-between items-center text-xl">
+      <p className="w-52 text-center mt-5 mb-10 font-merriweatherSans">Your reliable solution for stress free Parking </p>
       <div className="flex flex-col justify-center items-center my-10">
-        <input type="text" placeholder="Where to?" className="text-center my-10 p-3 border rounded-xl bg-gray-100 text-gray-500" onChange={handleInput} />
-        <button className={`${isInput ? 'block' : 'hidden'} bg-[#56AA2F] py-3 px-20 rounded-xl shadow-md shadow-black active:shadow-none`}>Find Parking</button>
-        <p className={`${isInput ? 'hidden' : 'block'} w-52 text-center my-10`}>Est. in 2024 Park Inn has since helped 1 Million motorist locate cheap reliable parking.</p>
+        <div>
+          <input type="text" className="text-center my-10 p-2 border rounded-full bg-gray-100 text-gray-500" onChange={handleInput} />
+          {/* <button className={`${isInput ? 'block' : 'hidden'} bg-[#56AA2F] py-3 px-20 rounded-xsl shadow-md shadow-black active:shadow-none`}>Find Parking</button> */}
+          <button className="relative -left-10 bg-[#F69E1A] py-4 px-2 rounded-full shadow shadow-black active:shadow-none">
+            <i className="fal fa-search fa-2xl"></i>
+          </button>
+        </div>
+        <p className={`${isInput ? 'hidden' : 'block'} w-72 text-center my-10`}> Established in 2024, has already helped 1 million motorists find affordable and dependable parking!</p>
       </div>
+      <GpsBar />
     </div>
   );
 };
