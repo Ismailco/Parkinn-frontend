@@ -26,6 +26,7 @@
     "stylelint": "^15.5.0"
   },
   "devDependencies": {
+    "@types/mapbox-gl": "^2.7.11",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/redux-logger": "^3.0.9",
