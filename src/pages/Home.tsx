@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import GpsBar from '../components/GpsBar';
 
 const Home = () => {
-  const [input, setInput] = React.useState<string>('');
-  const [isInput, setIsInput] = React.useState<boolean>(false);
+  const [input, setInput] = useState<string>('');
+  const [isInput, setIsInput] = useState<boolean>(false);
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > 0) {
       setInput(e.target.value);
@@ -19,7 +19,6 @@ const Home = () => {
       <div className="flex flex-col justify-center items-center my-10">
         <div>
           <input type="text" className="text-center my-10 p-2 border rounded-full bg-gray-100 text-gray-500" onChange={handleInput} />
-          {/* <button className={`${isInput ? 'block' : 'hidden'} bg-[#56AA2F] py-3 px-20 rounded-xsl shadow-md shadow-black active:shadow-none`}>Find Parking</button> */}
           <button className="relative -left-10 bg-[#F69E1A] py-4 px-2 rounded-full shadow shadow-black active:shadow-none text-black">
             <i className="fal fa-search fa-2xl"></i>
           </button>
