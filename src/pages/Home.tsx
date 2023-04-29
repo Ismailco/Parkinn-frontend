@@ -20,11 +20,11 @@ const Home = () => {
         <div>
           <input type="text" className="text-center my-10 p-2 border rounded-full bg-gray-100 text-gray-500" onChange={handleInput} />
           {/* <button className={`${isInput ? 'block' : 'hidden'} bg-[#56AA2F] py-3 px-20 rounded-xsl shadow-md shadow-black active:shadow-none`}>Find Parking</button> */}
-          <button className="relative -left-10 bg-[#F69E1A] py-4 px-2 rounded-full shadow shadow-black active:shadow-none">
+          <button className="relative -left-10 bg-[#F69E1A] py-4 px-2 rounded-full shadow shadow-black active:shadow-none text-black">
             <i className="fal fa-search fa-2xl"></i>
           </button>
         </div>
-        <p className={`${isInput ? 'hidden' : 'block'} w-72 text-center my-10`}> Established in 2024, has already helped 1 million motorists find affordable and dependable parking!</p>
+        <p className="w-72 text-center my-10"> Established in 2024, has already helped 1 million motorists find affordable and dependable parking!</p>
       </div>
       <GpsBar />
     </div>
