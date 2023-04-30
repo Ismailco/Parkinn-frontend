@@ -3,25 +3,25 @@ import GpsBar from '../components/GpsBar';
 // import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  // const navigate = useNavigate();
-  // const [input, setInput] = useState('');
-  const [input, setInput] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
   const [isInput, setIsInput] = useState(false);
+  const [input, setInput] = useState('');
+  // const navigate = useNavigate();
+  // const [input, setInput] = useState({
+  //   latitude: 0,
+  //   longitude: 0,
+  // });
   const handleInput = (e) => {
     if (e.target.value.length > 1) {
-      // setInput(e.target.value);
+      setInput(e.target.value);
       setIsInput(true);
     } else {
       setIsInput(false);
     }
   };
 
-  const handleGpsData = (gpsLocation) => {
-    setInput(gpsLocation);
-  };
+  // const handleGpsData = (gpsLocation) => {
+  //   setInput(gpsLocation);
+  // };
 
   // useEffect(() => {
   //   navigate('/map');
@@ -39,7 +39,7 @@ const Home = () => {
         </div>
         <p className="w-72 text-center my-10"> Established in 2024, has already helped 1 million motorists find affordable and dependable parking!</p>
       </div>
-      <GpsBar gpsLocation={handleGpsData} />
+      <GpsBar />
     </div>
   );
 };
