@@ -9,7 +9,8 @@ const Map = () => {
   const { latitude, longitude } = useParams();
 
   const fetchData = async () => {
-    const response = await fetch(`https://parkinn-api.azurewebsites.net/api/parking-meters/close-to-user?userLatitude=${latitude}&userLongitude=${longitude}&maxDistanceInMeters=${100}&rows=${500}`);
+    const response = await // fetch(`https://parkinn-api.azurewebsites.net/api/parking-meters/close-to-user?userLatitude=${latitude}&userLongitude=${longitude}&maxDistanceInMeters=${100}&rows=${500}`);
+    fetch(`https://parkinn-api.azurewebsites.net/api/parking-meters?rows=${500}`);
     const data = await response.json();
     setParkingData(data);
   };
