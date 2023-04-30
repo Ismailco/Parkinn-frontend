@@ -8,7 +8,7 @@ const Map = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch('https://parkinn-api.azurewebsites.net/api/parking-meters?rows=10');
+      const response = await fetch('https://parkinn-api.azurewebsites.net/api/parking-meters?rows=500');
       const data = await response.json();
       setParkingData(data);
     }
@@ -47,9 +47,9 @@ const Map = () => {
             'icon-image': 'parking-icon',
             'icon-size': 0.2,
             // 'text-field': ['get', 'title'],
-            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-            'text-offset': [0, 1.25],
-            'text-anchor': 'top',
+            // 'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            // 'text-offset': [0, 1.25],
+            // 'text-anchor': 'top',
           },
         });
       });

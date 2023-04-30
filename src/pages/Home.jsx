@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import GpsBar from '../components/GpsBar';
 
 const Home = () => {
-  const [input, setInput] = useState<string>('');
-  const [isInput, setIsInput] = useState<boolean>(false);
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [input, setInput] = useState('');
+  const [isInput, setIsInput] = useState(false);
+  const handleInput = (e) => {
     if (e.target.value.length > 0) {
       setInput(e.target.value);
       setIsInput(true);
