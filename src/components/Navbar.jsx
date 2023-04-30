@@ -19,11 +19,7 @@ const Navbar = () => {
           </li>
         </ul>
       </div>
-      <img src="./img/NavLogo.svg" alt="Navigation Logo" />
-      {/* <div className="bg-gray-300 w-20 h-10 text-center">Logo</div>
-      <button type="button">
-        <i className="fas fa-bars fa-xl text-gray-600"></i>
-      </button> */}
+      <img src="/img/NavLogo.svg" alt="Navigation Logo" />
     </div>
   );
 };

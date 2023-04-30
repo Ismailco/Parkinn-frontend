@@ -1,17 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import GpsBar from '../components/GpsBar';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  const [input, setInput] = useState('');
+  const navigate = useNavigate();
+  // const [input, setInput] = useState('');
+  const [input, setInput] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
   const [isInput, setIsInput] = useState(false);
   const handleInput = (e) => {
-    if (e.target.value.length > 0) {
-      setInput(e.target.value);
+    if (e.target.value.length > 1) {
+      // setInput(e.target.value);
       setIsInput(true);
     } else {
       setIsInput(false);
     }
   };
+
+  const handleGpsData = (gpsLocation) => {
+    setInput(gpsLocation);
+  };
+
+  // useEffect(() => {
+  //   navigate('/map');
+  // }, [input]);
 
   return (
     <div className="text-white w-full flex flex-col justify-between items-center text-xl">
@@ -25,7 +39,7 @@ const Home = () => {
         </div>
         <p className="w-72 text-center my-10"> Established in 2024, has already helped 1 million motorists find affordable and dependable parking!</p>
       </div>
-      <GpsBar />
+      <GpsBar gpsLocation={handleGpsData} />
     </div>
   );
 };

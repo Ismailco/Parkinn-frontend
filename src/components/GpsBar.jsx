@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 
-const GpsBar = () => {
+const GpsBar = (props) => {
   const [gps, setGps] = useState(false);
-  const [gpsLocation, setGpsLocation] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
+  // const [gpsCords, setGpsLocation] = useState({
+  //   latitude: 0,
+  //   longitude: 0,
+  // });
 
-  const handleGps = () => {
+  const handleGps = ({ gpsLocation }) => {
     setGps((prev) => !prev);
     if (!gps) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            setGpsLocation({
+            props.gpsLocation({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             });

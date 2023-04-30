@@ -6,17 +6,15 @@ const Map = () => {
   const [map, setMap] = useState(null);
   const [parkingData, setParkingData] = useState([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      const response = await fetch('https://parkinn-api.azurewebsites.net/api/parking-meters?rows=500');
-      const data = await response.json();
-      setParkingData(data);
-    }
-    fetchData();
-  }, []);
+  const fetchData = async () => {
+    const response = await fetch('https://parkinn-api.azurewebsites.net/api/parking-meters?rows=500');
+    const data = await response.json();
+    setParkingData(data);
+  };
 
   useEffect(() => {
-    if (!map) return;
+    fetchData();
+    if (!map || !parkingData.length) return;
     map.on('load', function () {
       map.addSource('parking-data', {
         type: 'geojson',
@@ -36,7 +34,7 @@ const Map = () => {
         },
       });
 
-      map.loadImage('./parkingIcon.png', function (error, image) {
+      map.loadImage('/parkingIcon.png', function (error, image) {
         if (error) throw error;
         map.addImage('parking-icon', image);
         map.addLayer({
@@ -46,10 +44,10 @@ const Map = () => {
           layout: {
             'icon-image': 'parking-icon',
             'icon-size': 0.2,
-            // 'text-field': ['get', 'title'],
-            // 'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-            // 'text-offset': [0, 1.25],
-            // 'text-anchor': 'top',
+            'text-field': ['get', 'title'],
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-offset': [0, 1.25],
+            'text-anchor': 'top',
           },
         });
       });
@@ -57,9 +55,7 @@ const Map = () => {
   }, [map, parkingData]);
 
   useEffect(() => {
-    // set up mapbox and create the map
     mapboxgl.accessToken = 'pk.eyJ1IjoiaXNtYWlsY28iLCJhIjoiY2xoMDZhNjU0MHFxcjNscXhhdnNvc3g3aSJ9.9nr4OzENJJGMPg-sbpWOqg';
-
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v11', // style URL
