@@ -11,7 +11,6 @@ const App = () => {
         <div className="min-h-screen flex flex-col justify-between items-center bg-[#2418EB]">
           <Navbar />
           <Routes>
-            {/* <Home /> */}
             <Route path="/" element={<Home />} />
             <Route path="/map" element={<Map />} />
           </Routes>
