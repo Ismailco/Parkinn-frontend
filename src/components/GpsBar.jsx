@@ -7,7 +7,7 @@ const GpsBar = (props) => {
   //   longitude: 0,
   // });
 
-  const handleGps = ({ gpsLocation }) => {
+  const handleGps = () => {
     setGps((prev) => !prev);
     if (!gps) {
       if (navigator.geolocation) {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import GpsBar from '../components/GpsBar';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // const [input, setInput] = useState('');
   const [input, setInput] = useState({
     latitude: 0,
