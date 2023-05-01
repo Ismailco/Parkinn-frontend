@@ -12,6 +12,7 @@
     "lint:styles": "stylelint \"**/*.{scss,css}\""
   },
   "dependencies": {
+    "@mapbox/mapbox-sdk": "^0.15.1",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
     "eslint": "^8.38.0",

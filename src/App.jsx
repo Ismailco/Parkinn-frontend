@@ -13,6 +13,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/map/:latitude/:longitude" element={<Map />} />
+            <Route path="/map" element={<Map />} />
           </Routes>
         </div>
       </BrowserRouter>
