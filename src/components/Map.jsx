@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxClient from '@mapbox/mapbox-sdk';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
+import polyline from '@mapbox/polyline';
 
 const Map = () => {
   const mapContainer = useRef(null);
@@ -10,14 +11,10 @@ const Map = () => {
   const [closestParking, setClosestParking] = useState(null);
   const [location, setLocation] = useState(null);
 
-  const accessToken = 'pk.eyJ1IjoiaXNtYWlsY28iLCJhIjoiY2xoMDZhNjU0MHFxcjNscXhhdnNvc3g3aSJ9.9nr4OzENJJGMPg-sbpWOqg';
+  const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
   const directionsClient = MapboxDirections(client);
 
-  console.log(directionsClient);
-
-  console.log(client);
-  // Fetch the user's location using the Geolocation API
   const getUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -42,7 +39,6 @@ const Map = () => {
 
     if (!location) return;
 
-    // Find the closest parking meter to the user's location
     const closest = data.reduce((prev, curr) => {
       const prevDistance = getDistance(location.latitude, location.longitude, prev.latitude, prev.longitude);
       const currDistance = getDistance(location.latitude, location.longitude, curr.latitude, curr.longitude);
@@ -52,9 +48,8 @@ const Map = () => {
     setClosestParking(closest);
   };
 
-  // Calculate the distance between two coordinates (in meters)
-  function getDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // Earth's radius in meters
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3;
     const lat1Rad = (lat1 * Math.PI) / 180;
     const lat2Rad = (lat2 * Math.PI) / 180;
     const deltaLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -64,7 +59,7 @@ const Map = () => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c;
-  }
+  };
 
   useEffect(() => {
     if (!location) {
@@ -74,24 +69,21 @@ const Map = () => {
 
     fetchData();
     if (!map || !parkingData.length || !closestParking) return;
-
     directionsClient
       .getDirections({
         profile: 'driving',
-        waypoints: [
-          { coordinates: [location.longitude, location.latitude] }, // Starting point (user's location)
-          { coordinates: [closestParking.longitude, closestParking.latitude] }, // Closest parking meter
-        ],
+        waypoints: [{ coordinates: [location.longitude, location.latitude] }, { coordinates: [closestParking.longitude, closestParking.latitude] }],
       })
       .send()
       .then((response) => {
         if (!response || !response.body || !response.body.routes || !response.body.routes.length) {
-          console.error('Unable to fetch directions');
+          alert('No parking found in your area!');
           return;
         }
         const directions = response.body.routes[0].geometry;
+        const decodedPolyline = polyline.toGeoJSON(directions);
 
-        map.on('load', function () {
+        map.on('load', () => {
           if (!map.getSource('parking-data')) {
             map.addSource('parking-data', {
               type: 'geojson',
@@ -112,41 +104,45 @@ const Map = () => {
             });
           }
 
-          map.loadImage('/img/parkingIcon.png', function (error, image) {
-            if (error) throw error;
-            map.addImage('parking-icon', image);
+          if (!map.getSource('route')) {
+            map.addSource('route', {
+              type: 'geojson',
+              data: decodedPolyline,
+            });
+
             map.addLayer({
-              id: 'parking-layer',
-              type: 'symbol',
-              source: 'parking-data',
+              id: 'route',
+              type: 'line',
+              source: 'route',
               layout: {
-                'icon-image': 'parking-icon',
-                'icon-size': 0.2,
+                'line-join': 'round',
+                'line-cap': 'round',
+              },
+              paint: {
+                'line-color': '#1db7dd',
+                'line-width': 7,
               },
             });
-          });
+          } else {
+            map.getSource('route').setData(decodedPolyline);
+          }
 
-          // Add a source and layer for the directions
-          map.addSource('route', {
-            type: 'geojson',
-            data: {
-              type: 'Feature',
-              geometry: directions,
-            },
-          });
-
-          map.addLayer({
-            id: 'route',
-            type: 'line',
-            source: 'route',
-            layout: {
-              'line-join': 'round',
-              'line-cap': 'round',
-            },
-            paint: {
-              'line-color': '#1db7dd',
-              'line-width': 5,
-            },
+          map.loadImage('/img/parkingIcon.png', (error, image) => {
+            if (error) throw error;
+            if (!map.hasImage('parking-icon')) {
+              map.addImage('parking-icon', image);
+            }
+            if (!map.getLayer('parking-layer')) {
+              map.addLayer({
+                id: 'parking-layer',
+                type: 'symbol',
+                source: 'parking-data',
+                layout: {
+                  'icon-image': 'parking-icon',
+                  'icon-size': 0.2,
+                },
+              });
+            }
           });
         });
       });
@@ -157,9 +153,9 @@ const Map = () => {
     mapboxgl.accessToken = accessToken;
     const map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v11', // style URL
-      center: [location.longitude, location.latitude], // starting position [lng, lat]
-      zoom: 15, // starting zoom
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [location.longitude, location.latitude],
+      zoom: 18,
     });
 
     setMap(map);
