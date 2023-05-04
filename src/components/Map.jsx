@@ -255,18 +255,18 @@ const Map = () => {
         }
       });
 
-      map.on('click', 'parking-layer', (e) => {
-        if (!e.features.length) return;
+      // map.on('click', 'parking-layer', (e) => {
+      //   if (!e.features.length) return;
 
-        const feature = e.features[0];
-        const { streetName, streetNum, latitude, longitude } = feature.geometry.coordinates;
-        // Calculate the position for the dialog
-        const [left, top] = map.project(e.lngLat);
+      //   const feature = e.features[0];
+      //   const { streetName, streetNum, latitude, longitude } = feature.geometry.coordinates;
+      //   // Calculate the position for the dialog
+      //   const [left, top] = map.project(e.lngLat);
 
-        // Set the dialog data and show it
-        setDialogData({ streetName, streetNum, latitude, longitude, left, top });
-        setShowDialog(true);
-      });
+      //   // Set the dialog data and show it
+      //   setDialogData({ streetName, streetNum, latitude, longitude, left, top });
+      //   setShowDialog(true);
+      // });
     });
   };
   useEffect(() => {
