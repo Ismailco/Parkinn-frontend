@@ -11,9 +11,17 @@ const Map = () => {
   const [closestParking, setClosestParking] = useState(null);
   const [location, setLocation] = useState(null);
 
+  const [navigation, setNavigation] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogData, setDialogData] = useState(null);
+
   const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
   const directionsClient = MapboxDirections(client);
+
+  const handleNavigation = () => {
+    setNavigation((prev) => !prev);
+  };
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -61,14 +69,7 @@ const Map = () => {
     return R * c;
   };
 
-  useEffect(() => {
-    if (!location) {
-      getUserLocation();
-      return;
-    }
-
-    fetchData();
-    if (!map || !parkingData.length || !closestParking) return;
+  const initNavigation = () => {
     directionsClient
       .getDirections({
         profile: 'driving',
@@ -127,6 +128,56 @@ const Map = () => {
             map.getSource('route').setData(decodedPolyline);
           }
 
+          // Start code for the navigation arrow
+          // Add a source for the arrow
+          if (!map.getSource('arrow-source')) {
+            map.addSource('arrow-source', {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: [],
+              },
+            });
+          }
+
+          // Add a layer for the arrow
+          if (!map.getLayer('arrow-layer')) {
+            map.addLayer({
+              id: 'arrow-layer',
+              type: 'symbol',
+              source: 'arrow-source',
+              layout: {
+                'icon-image': 'arrow-image', // Use a custom arrow image
+                'icon-size': 0.1, // Adjust the size of the arrow
+                'icon-anchor': 'bottom',
+              },
+            });
+          }
+
+          map.loadImage('/img/location.png', (error, image) => {
+            if (error) throw error;
+            if (!map.hasImage('arrow-image')) {
+              map.addImage('arrow-image', image);
+            }
+          });
+
+          const updateArrowPosition = () => {
+            if (map.getSource('arrow-source')) {
+              map.getSource('arrow-source').setData({
+                type: 'FeatureCollection',
+                features: [
+                  {
+                    type: 'Feature',
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [location.longitude, location.latitude],
+                    },
+                  },
+                ],
+              });
+            }
+          };
+          // end
           map.loadImage('/img/parkingIcon.png', (error, image) => {
             if (error) throw error;
             if (!map.hasImage('parking-icon')) {
@@ -144,9 +195,98 @@ const Map = () => {
               });
             }
           });
+          updateArrowPosition();
         });
+    //     map.on('click', 'parking-layer', (e) => {
+    //       if (!e.features.length) return;
+
+    //       const feature = e.features[0];
+    //       const { streetName, streetNum, latitude, longitude } = feature.properties;
+
+    //       // Calculate the position for the dialog
+    //       const [left, top] = map.project(e.lngLat);
+
+    //       // Set the dialog data and show it
+    //       setDialogData({ streetName, streetNum, latitude, longitude, left, top });
+    //       console.log('dialogData', dialogData);
+    //       setShowDialog(true);
+    //     });
+    //   });
+    // console.log('closestParking', closestParking);
+  };
+
+  const initMap = () => {
+    map.on('load', () => {
+      if (!map.getSource('parking-data')) {
+        map.addSource('parking-data', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: parkingData.map((parking) => ({
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [parking.longitude, parking.latitude],
+              },
+              properties: {
+                title: parking.postId,
+                description: parking.streetName,
+              },
+            })),
+          },
+        });
+      }
+
+      map.loadImage('/img/parkingIcon.png', (error, image) => {
+        if (error) throw error;
+        if (!map.hasImage('parking-icon')) {
+          map.addImage('parking-icon', image);
+        }
+        if (!map.getLayer('parking-layer')) {
+          map.addLayer({
+            id: 'parking-layer',
+            type: 'symbol',
+            source: 'parking-data',
+            layout: {
+              'icon-image': 'parking-icon',
+              'icon-size': 0.2,
+            },
+          });
+        }
       });
-  }, [map, parkingData, closestParking, location]);
+
+      map.on('click', 'parking-layer', (e) => {
+        if (!e.features.length) return;
+
+        const feature = e.features[0];
+        const { streetName, streetNum, latitude, longitude } = feature.geometry.coordinates;
+        // Calculate the position for the dialog
+        const [left, top] = map.project(e.lngLat);
+
+        // Set the dialog data and show it
+        setDialogData({ streetName, streetNum, latitude, longitude, left, top });
+        setShowDialog(true);
+      });
+    });
+  };
+  useEffect(() => {
+    if (!location) {
+      getUserLocation();
+      return;
+    }
+
+    if (!parkingData.length || !closestParking) {
+      fetchData();
+      return;
+    }
+
+    if (!map || !parkingData.length || !closestParking) return;
+    if (navigation) {
+      initNavigation();
+    } else {
+      initMap();
+    }
+  }, [map, location, parkingData, closestParking]); // <= parkingData, closestParking
 
   useEffect(() => {
     if (!location) return;
@@ -162,7 +302,45 @@ const Map = () => {
     return () => map.remove();
   }, [location]);
 
-  return <div className="w-full h-screen absolute" ref={mapContainer}></div>;
+  // const renderDialog = () => {
+  //   if (!showDialog || !dialogData) return null;
+
+  //   return (
+  //     <div className="absolute bg-white rounded p-4 shadow-md z-10" style={{ top: dialogData.top, left: dialogData.left }}>
+  //       <h3 className="text-xl font-bold mb-2">Location</h3>
+  //       <p className="text-gray-700">Street: {dialogData.streetName}</p>
+  //       <p className="text-gray-700">Street Number: {dialogData.streetNum}</p>
+  //       <p className="text-gray-700">
+  //         Location: {dialogData.latitude}, {dialogData.longitude}
+  //       </p>
+  //     </div>
+  //   );
+  // };
+
+  return (
+    <>
+      <div className="w-full h-screen absolute" ref={mapContainer}></div>
+      {/* {renderDialog()} */}
+      <div className="z-10 flex w-full">
+        <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
+          <p className="text-gray-600 text-xs">From current Location</p>
+          <p className="text-gray-600 text-xs">4 min</p>
+        </div>
+        <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
+          <p className="text-gray-600 text-xs">Navigation</p>
+          <button className={`${navigation ? 'bg-green-500 flex-row-reverse' : 'bg-[#F69E1A]'} flex justify-between items-center p-1 w-24 rounded-full duration-100`} onClick={handleNavigation}>
+            <img src="/img/gps.png" alt="navigation" className="bg-gray-300 rounded-full" />
+            <p className={`${navigation ? 'block' : 'hidden'} pl-2`}>ON</p>
+            <p className={`${navigation ? 'hidden' : 'block'} pr-2`}>OFF</p>
+          </button>
+        </div>
+        <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
+          <p className="text-gray-600 text-xs">Distance</p>
+          <p className="text-gray-600 text-xs">2.0 mi</p>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Map;
