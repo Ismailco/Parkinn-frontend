@@ -197,21 +197,21 @@ const Map = () => {
           });
           updateArrowPosition();
         });
-    //     map.on('click', 'parking-layer', (e) => {
-    //       if (!e.features.length) return;
+        // map.on('click', 'parking-layer', (e) => {
+        //   if (!e.features.length) return;
 
-    //       const feature = e.features[0];
-    //       const { streetName, streetNum, latitude, longitude } = feature.properties;
+        //   const feature = e.features[0];
+        //   const { streetName, streetNum, latitude, longitude } = feature.properties;
 
-    //       // Calculate the position for the dialog
-    //       const [left, top] = map.project(e.lngLat);
+        //   // Calculate the position for the dialog
+        //   const [left, top] = map.project(e.lngLat);
 
-    //       // Set the dialog data and show it
-    //       setDialogData({ streetName, streetNum, latitude, longitude, left, top });
-    //       console.log('dialogData', dialogData);
-    //       setShowDialog(true);
-    //     });
-    //   });
+        //   // Set the dialog data and show it
+        //   setDialogData({ streetName, streetNum, latitude, longitude, left, top });
+        //   console.log('dialogData', dialogData);
+        //   setShowDialog(true);
+        // });
+      });
     // console.log('closestParking', closestParking);
   };
 
