@@ -286,7 +286,7 @@ const Map = () => {
     } else {
       initMap();
     }
-  }, [map, location, parkingData, closestParking]); // <= parkingData, closestParking
+  }, [map, location, parkingData, closestParking, navigation]);
 
   useEffect(() => {
     if (!location) return;
