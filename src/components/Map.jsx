@@ -16,6 +16,7 @@ const Map = () => {
   const [duration, setDuration] = useState(0);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogData, setDialogData] = useState(null);
+  const [iconDimensions, setIconDimensions] = useState({ width: 0, height: 0 });
 
   const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
@@ -213,20 +214,6 @@ const Map = () => {
           });
           updateArrowPosition();
         });
-        map.on('click', 'parking-layer', (e) => {
-          if (!e.features.length) return;
-
-          const feature = e.features[0];
-          const { streetName, streetNum, latitude, longitude } = feature.properties;
-
-          // Calculate the position for the dialog
-          const [left, top] = map.project(e.lngLat);
-
-          // Set the dialog data and show it
-          setDialogData({ streetName, streetNum, latitude, longitude, left, top });
-          console.log('dialogData', dialogData);
-          setShowDialog(true);
-        });
       });
   };
 
@@ -256,6 +243,7 @@ const Map = () => {
         if (error) throw error;
         if (!map.hasImage('parking-icon')) {
           map.addImage('parking-icon', image);
+          setIconDimensions({ width: image.width, height: image.height });
         }
         if (!map.getLayer('parking-layer')) {
           map.addLayer({
@@ -278,7 +266,6 @@ const Map = () => {
 
         const parkingMeter = parkingData.find((pm) => Math.abs(pm.longitude - clickedLongitude) < 1e-6 && Math.abs(pm.latitude - clickedLatitude) < 1e-6);
 
-        // console.log('parkingMeter', parkingMeter);
         if (!parkingMeter) {
           console.error('No matching parking meter found');
           return;
@@ -288,10 +275,18 @@ const Map = () => {
         const left = point.x;
         const top = point.y;
 
+        // Start  */ Calculate the position for the dialog
+        const dialogWidth = 200;
+        const dialogHeight = 120;
+        const iconWidth = iconDimensions.width * 0.2;
+        const iconHeight = iconDimensions.height * 0.2;
+        const adjustedLeft = left - dialogWidth / 2 + iconWidth / 2;
+        const adjustedTop = top - dialogHeight - iconHeight / 2;
+        // End
         setDialogData({
           ...parkingMeter,
-          left,
-          top,
+          left: adjustedLeft,
+          top: adjustedTop,
         });
         setShowDialog(true);
       });
@@ -343,7 +338,7 @@ const Map = () => {
     if (!showDialog || !dialogData) return null;
 
     return (
-      <div className="relative  bg-white rounded p-4 shadow-md z-10">
+      <div className="absolute bg-white rounded p-4 shadow-md z-10" style={{ top: dialogData.top, left: dialogData.left }}>
         <h3 className="text-xl font-bold mb-2">Location</h3>
         <p className="text-gray-700">Street: {dialogData.streetName}</p>
         <p className="text-gray-700">Street Number: {dialogData.streetNum}</p>
