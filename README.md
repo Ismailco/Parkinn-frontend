@@ -55,7 +55,7 @@ The app is built with the following tech stack:
 
 > You can view a live demo of the React Drag and Drop To-Do App by following this link:
 
-- [Live Demo Link](https://dropzone.pages.dev)
+- [Live Demo Link](https://parkinn-frontend.pages.dev/)
 
 ## 💻 Getting Started <a name="getting-started"></a>
 
