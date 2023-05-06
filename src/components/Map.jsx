@@ -12,8 +12,10 @@ const Map = () => {
   const [location, setLocation] = useState(null);
 
   const [navigation, setNavigation] = useState(false);
-  const [showDialog, setShowDialog] = useState(false);
-  const [dialogData, setDialogData] = useState(null);
+  const [distance, setDistance] = useState(0);
+  const [duration, setDuration] = useState(0);
+  // const [showDialog, setShowDialog] = useState(false);
+  // const [dialogData, setDialogData] = useState(null);
 
   const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
@@ -41,7 +43,7 @@ const Map = () => {
   };
 
   const fetchData = async () => {
-    const response = await fetch(`https://parkinn-api.azurewebsites.net/api/parking-meters?rows=${500}`);
+    const response = await fetch(`https://parkinn-api.azurewebsites.net/api/parking-meters?rows=${1000}`);
     const data = await response.json();
     setParkingData(data);
 
@@ -69,6 +71,14 @@ const Map = () => {
     return R * c;
   };
 
+  const formatDuration = (durationInSeconds) => {
+    const hours = Math.floor(durationInSeconds / 3600);
+    const minutes = Math.floor((durationInSeconds % 3600) / 60);
+    const seconds = Math.floor(durationInSeconds % 60);
+
+    return `${hours ? `${hours}h ` : ''}${minutes ? `${minutes}m ` : ''}${seconds ? `${seconds}s` : ''}`;
+  };
+
   const initNavigation = () => {
     directionsClient
       .getDirections({
@@ -83,6 +93,12 @@ const Map = () => {
         }
         const directions = response.body.routes[0].geometry;
         const decodedPolyline = polyline.toGeoJSON(directions);
+
+        const distanceInMeters = response.body.routes[0].distance;
+        const durationInSeconds = response.body.routes[0].duration;
+
+        setDistance(distanceInMeters);
+        setDuration(durationInSeconds);
 
         map.on('load', () => {
           if (!map.getSource('parking-data')) {
@@ -280,12 +296,12 @@ const Map = () => {
       return;
     }
 
-    if (!map || !parkingData.length || !closestParking) return;
     if (navigation) {
       initNavigation();
     } else {
       initMap();
     }
+    // if (!map || !parkingData.length || !closestParking) return;
   }, [map, location, parkingData, closestParking, navigation]);
 
   useEffect(() => {
@@ -321,22 +337,21 @@ const Map = () => {
     <>
       <div className="w-full h-screen absolute" ref={mapContainer}></div>
       {/* {renderDialog()} */}
-      <div className="z-10 flex w-full">
+      <div className="z-10 flex w-full justify-start items-center">
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
           <p className="text-gray-600 text-xs">From current Location</p>
-          <p className="text-gray-600 text-xs">4 min</p>
+          <p className="text-gray-600 text-xs">{formatDuration(duration)}</p>
         </div>
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
-          <p className="text-gray-600 text-xs">Navigation</p>
-          <button className={`${navigation ? 'bg-green-500 flex-row-reverse' : 'bg-[#F69E1A]'} flex justify-between items-center p-1 w-24 rounded-full duration-100`} onClick={handleNavigation}>
-            <img src="/img/gps.png" alt="navigation" className="bg-gray-300 rounded-full" />
-            <p className={`${navigation ? 'block' : 'hidden'} pl-2`}>ON</p>
-            <p className={`${navigation ? 'hidden' : 'block'} pr-2`}>OFF</p>
+          <button className={`${navigation ? 'hidden' : 'block'} bg-green-500 flex justify-center items-center p-1 w-14 h-14 rounded-full duration-100 border border-gray-500`} onClick={handleNavigation}>
+            {/* <img src="/img/gps.png" alt="navigation" className="bg-gray-300 rounded-full" /> */}
+            <p className={`${navigation ? 'hidden' : 'block'}`}>Start</p>
+            {/* <p className={`${navigation ? 'hidden' : 'block'} pr-2`}>OFF</p> */}
           </button>
         </div>
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
           <p className="text-gray-600 text-xs">Distance</p>
-          <p className="text-gray-600 text-xs">2.0 mi</p>
+          <p className="text-gray-600 text-xs">{distance.toFixed(2)} m</p>
         </div>
       </div>
     </>
