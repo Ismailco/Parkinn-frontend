@@ -310,7 +310,6 @@ const Map = () => {
     } else {
       initMap();
     }
-    if (!map || !parkingData.length || !closestParking) return;
   }, [map, location, parkingData, closestParking, navigation]);
 
   useEffect(() => {

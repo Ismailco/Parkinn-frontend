@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-const GpsBar = (props) => {
+const GpsBar = () => {
   const [gps, setGps] = useState(false);
   const [gpsCords, setGpsCords] = useState(null);
 
