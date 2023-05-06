@@ -113,10 +113,6 @@ const Map = () => {
                     type: 'Point',
                     coordinates: [parking.longitude, parking.latitude],
                   },
-                  properties: {
-                    title: parking.postId,
-                    description: parking.streetName,
-                  },
                 })),
               },
             });
@@ -230,10 +226,6 @@ const Map = () => {
                 type: 'Point',
                 coordinates: [parking.longitude, parking.latitude],
               },
-              properties: {
-                title: parking.postId,
-                description: parking.streetName,
-              },
             })),
           },
         });
@@ -301,6 +293,7 @@ const Map = () => {
       });
     });
   };
+
   useEffect(() => {
     if (!location) {
       getUserLocation();
@@ -317,7 +310,7 @@ const Map = () => {
     } else {
       initMap();
     }
-    // if (!map || !parkingData.length || !closestParking) return;
+    if (!map || !parkingData.length || !closestParking) return;
   }, [map, location, parkingData, closestParking, navigation]);
 
   useEffect(() => {
