@@ -337,16 +337,14 @@ const Map = () => {
     <>
       <div className="w-full h-screen absolute" ref={mapContainer}></div>
       {/* {renderDialog()} */}
-      <div className="z-10 flex w-full justify-start items-center">
+      <div className="z-10 flex w-full justify-st items-center">
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
           <p className="text-gray-600 text-xs">From current Location</p>
           <p className="text-gray-600 text-xs">{formatDuration(duration)}</p>
         </div>
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
           <button className={`${navigation ? 'hidden' : 'block'} bg-green-500 flex justify-center items-center p-1 w-14 h-14 rounded-full duration-100 border border-gray-500`} onClick={handleNavigation}>
-            {/* <img src="/img/gps.png" alt="navigation" className="bg-gray-300 rounded-full" /> */}
             <p className={`${navigation ? 'hidden' : 'block'}`}>Start</p>
-            {/* <p className={`${navigation ? 'hidden' : 'block'} pr-2`}>OFF</p> */}
           </button>
         </div>
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
