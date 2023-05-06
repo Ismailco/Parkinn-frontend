@@ -14,8 +14,8 @@ const Map = () => {
   const [navigation, setNavigation] = useState(false);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
-  // const [showDialog, setShowDialog] = useState(false);
-  // const [dialogData, setDialogData] = useState(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogData, setDialogData] = useState(null);
 
   const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
@@ -213,22 +213,21 @@ const Map = () => {
           });
           updateArrowPosition();
         });
-        // map.on('click', 'parking-layer', (e) => {
-        //   if (!e.features.length) return;
+        map.on('click', 'parking-layer', (e) => {
+          if (!e.features.length) return;
 
-        //   const feature = e.features[0];
-        //   const { streetName, streetNum, latitude, longitude } = feature.properties;
+          const feature = e.features[0];
+          const { streetName, streetNum, latitude, longitude } = feature.properties;
 
-        //   // Calculate the position for the dialog
-        //   const [left, top] = map.project(e.lngLat);
+          // Calculate the position for the dialog
+          const [left, top] = map.project(e.lngLat);
 
-        //   // Set the dialog data and show it
-        //   setDialogData({ streetName, streetNum, latitude, longitude, left, top });
-        //   console.log('dialogData', dialogData);
-        //   setShowDialog(true);
-        // });
+          // Set the dialog data and show it
+          setDialogData({ streetName, streetNum, latitude, longitude, left, top });
+          console.log('dialogData', dialogData);
+          setShowDialog(true);
+        });
       });
-    // console.log('closestParking', closestParking);
   };
 
   const initMap = () => {
@@ -271,18 +270,40 @@ const Map = () => {
         }
       });
 
-      // map.on('click', 'parking-layer', (e) => {
-      //   if (!e.features.length) return;
+      map.on('click', 'parking-layer', (e) => {
+        if (!e.features.length) return;
 
-      //   const feature = e.features[0];
-      //   const { streetName, streetNum, latitude, longitude } = feature.geometry.coordinates;
-      //   // Calculate the position for the dialog
-      //   const [left, top] = map.project(e.lngLat);
+        const clickedLongitude = e.features[0].geometry.coordinates[0];
+        const clickedLatitude = e.features[0].geometry.coordinates[1];
 
-      //   // Set the dialog data and show it
-      //   setDialogData({ streetName, streetNum, latitude, longitude, left, top });
-      //   setShowDialog(true);
-      // });
+        const parkingMeter = parkingData.find((pm) => Math.abs(pm.longitude - clickedLongitude) < 1e-6 && Math.abs(pm.latitude - clickedLatitude) < 1e-6);
+
+        // console.log('parkingMeter', parkingMeter);
+        if (!parkingMeter) {
+          console.error('No matching parking meter found');
+          return;
+        }
+
+        const point = map.project(e.lngLat);
+        const left = point.x;
+        const top = point.y;
+
+        setDialogData({
+          ...parkingMeter,
+          left,
+          top,
+        });
+        setShowDialog(true);
+      });
+
+      map.on('click', (e) => {
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: ['parking-layer'],
+        });
+        if (!features.length) {
+          setShowDialog(false);
+        }
+      });
     });
   };
   useEffect(() => {
@@ -318,25 +339,22 @@ const Map = () => {
     return () => map.remove();
   }, [location]);
 
-  // const renderDialog = () => {
-  //   if (!showDialog || !dialogData) return null;
+  const renderDialog = () => {
+    if (!showDialog || !dialogData) return null;
 
-  //   return (
-  //     <div className="absolute bg-white rounded p-4 shadow-md z-10" style={{ top: dialogData.top, left: dialogData.left }}>
-  //       <h3 className="text-xl font-bold mb-2">Location</h3>
-  //       <p className="text-gray-700">Street: {dialogData.streetName}</p>
-  //       <p className="text-gray-700">Street Number: {dialogData.streetNum}</p>
-  //       <p className="text-gray-700">
-  //         Location: {dialogData.latitude}, {dialogData.longitude}
-  //       </p>
-  //     </div>
-  //   );
-  // };
+    return (
+      <div className="relative  bg-white rounded p-4 shadow-md z-10">
+        <h3 className="text-xl font-bold mb-2">Location</h3>
+        <p className="text-gray-700">Street: {dialogData.streetName}</p>
+        <p className="text-gray-700">Street Number: {dialogData.streetNum}</p>
+      </div>
+    );
+  };
 
   return (
     <>
       <div className="w-full h-screen absolute" ref={mapContainer}></div>
-      {/* {renderDialog()} */}
+      {renderDialog()}
       <div className="z-10 flex w-full justify-st items-center">
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
           <p className="text-gray-600 text-xs">From current Location</p>
