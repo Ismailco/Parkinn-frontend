@@ -320,8 +320,6 @@ const Map = () => {
           });
         }
       };
-      // end
-
       updateArrowPosition();
     });
     map.on('click', 'parking-layer', (e) => {
@@ -379,10 +377,12 @@ const Map = () => {
       return;
     }
 
-    if (navigation) {
-      initNavigation();
-    } else {
-      initMap();
+    if (map && parkingData.length > 0) {
+      if (navigation) {
+        initNavigation();
+      } else {
+        initMap();
+      }
     }
   }, [map, parkingData, closestParking, navigation]);
 
