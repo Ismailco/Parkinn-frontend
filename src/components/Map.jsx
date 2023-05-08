@@ -116,6 +116,17 @@ const Map = () => {
                 })),
               },
             });
+          } else {
+            map.getSource('parking-data').setData({
+              type: 'FeatureCollection',
+              features: parkingData.map((parking) => ({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [parking.longitude, parking.latitude],
+                },
+              })),
+            });
           }
 
           if (!map.getSource('route')) {
@@ -313,47 +324,47 @@ const Map = () => {
 
       updateArrowPosition();
     });
-          map.on('click', 'parking-layer', (e) => {
-            if (!e.features.length) return;
+    map.on('click', 'parking-layer', (e) => {
+      if (!e.features.length) return;
 
-            const clickedLongitude = e.features[0].geometry.coordinates[0];
-            const clickedLatitude = e.features[0].geometry.coordinates[1];
+      const clickedLongitude = e.features[0].geometry.coordinates[0];
+      const clickedLatitude = e.features[0].geometry.coordinates[1];
 
-            const parkingMeter = parkingData.find((pm) => Math.abs(pm.longitude - clickedLongitude) < 1e-6 && Math.abs(pm.latitude - clickedLatitude) < 1e-6);
+      const parkingMeter = parkingData.find((pm) => Math.abs(pm.longitude - clickedLongitude) < 1e-6 && Math.abs(pm.latitude - clickedLatitude) < 1e-6);
 
-            if (!parkingMeter) {
-              console.error('No matching parking meter found');
-              return;
-            }
+      if (!parkingMeter) {
+        console.error('No matching parking meter found');
+        return;
+      }
 
-            const point = map.project(e.lngLat);
-            const left = point.x;
-            const top = point.y;
+      const point = map.project(e.lngLat);
+      const left = point.x;
+      const top = point.y;
 
-            // Start  */ Calculate the position for the dialog
-            const dialogWidth = 200;
-            const dialogHeight = 120;
-            const iconWidth = iconDimensions.width * 0.2;
-            const iconHeight = iconDimensions.height * 0.2;
-            const adjustedLeft = left - dialogWidth / 2 + iconWidth / 2;
-            const adjustedTop = top - dialogHeight - iconHeight / 2;
-            // End
-            setDialogData({
-              ...parkingMeter,
-              left: adjustedLeft,
-              top: adjustedTop,
-            });
-            setShowDialog(true);
-          });
+      // Start  */ Calculate the position for the dialog
+      const dialogWidth = 200;
+      const dialogHeight = 120;
+      const iconWidth = iconDimensions.width * 0.2;
+      const iconHeight = iconDimensions.height * 0.2;
+      const adjustedLeft = left - dialogWidth / 2 + iconWidth / 2;
+      const adjustedTop = top - dialogHeight - iconHeight / 2;
+      // End
+      setDialogData({
+        ...parkingMeter,
+        left: adjustedLeft,
+        top: adjustedTop,
+      });
+      setShowDialog(true);
+    });
 
-          map.on('click', (e) => {
-            const features = map.queryRenderedFeatures(e.point, {
-              layers: ['parking-layer'],
-            });
-            if (!features.length) {
-              setShowDialog(false);
-            }
-          });
+    map.on('click', (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['parking-layer'],
+      });
+      if (!features.length) {
+        setShowDialog(false);
+      }
+    });
   };
 
   useEffect(() => {
