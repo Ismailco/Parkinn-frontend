@@ -250,6 +250,55 @@ const Map = () => {
         }
       });
 
+      // Add user location to the map
+      if (!map.getSource('arrow-source')) {
+        map.addSource('arrow-source', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: [],
+          },
+        });
+      }
+
+      // Add a layer for the arrow
+      if (!map.getLayer('arrow-layer')) {
+        map.addLayer({
+          id: 'arrow-layer',
+          type: 'symbol',
+          source: 'arrow-source',
+          layout: {
+            'icon-image': 'arrow-image', // Use a custom arrow image
+            'icon-size': 0.1, // Adjust the size of the arrow
+            'icon-anchor': 'bottom',
+          },
+        });
+      }
+
+      map.loadImage('/img/location.png', (error, image) => {
+        if (error) throw error;
+        if (!map.hasImage('arrow-image')) {
+          map.addImage('arrow-image', image);
+        }
+      });
+
+      const updateArrowPosition = () => {
+        if (map.getSource('arrow-source')) {
+          map.getSource('arrow-source').setData({
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [location.longitude, location.latitude],
+                },
+              },
+            ],
+          });
+        }
+      };
+      // end
       map.on('click', 'parking-layer', (e) => {
         if (!e.features.length) return;
 
@@ -291,6 +340,7 @@ const Map = () => {
           setShowDialog(false);
         }
       });
+      updateArrowPosition();
     });
   };
 
