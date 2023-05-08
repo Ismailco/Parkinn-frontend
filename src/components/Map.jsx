@@ -345,13 +345,14 @@ const Map = () => {
   };
 
   useEffect(() => {
+    if (map && location) {
+      fetchData();
+    }
+  }, [map, location]);
+
+  useEffect(() => {
     if (!location) {
       getUserLocation();
-      return;
-    }
-
-    if (!parkingData.length || !closestParking) {
-      fetchData();
       return;
     }
 
@@ -360,7 +361,7 @@ const Map = () => {
     } else {
       initMap();
     }
-  }, [map, location, parkingData, closestParking, navigation]);
+  }, [map, parkingData, closestParking, navigation]);
 
   useEffect(() => {
     if (!location) return;
