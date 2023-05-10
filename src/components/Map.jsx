@@ -18,12 +18,23 @@ const Map = () => {
   const [dialogData, setDialogData] = useState(null);
   const [iconDimensions, setIconDimensions] = useState({ width: 0, height: 0 });
 
+  const [selectedParkingMeter, setSelectedParkingMeter] = useState(null);
+
   const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
   const directionsClient = MapboxDirections(client);
 
   const handleNavigation = () => {
     setNavigation((prev) => !prev);
+    if (!navigation) {
+      map.resize();
+      map.flyTo({
+        center: [location.longitude, location.latitude],
+        zoom: 10,
+      });
+    } else {
+      setSelectedParkingMeter(null);
+    }
   };
 
   const getUserLocation = () => {
@@ -81,10 +92,15 @@ const Map = () => {
   };
 
   const initNavigation = () => {
+    if (!selectedParkingMeter) {
+      alert('Please select a parking meter first!');
+      return;
+    }
+
     directionsClient
       .getDirections({
         profile: 'driving',
-        waypoints: [{ coordinates: [location.longitude, location.latitude] }, { coordinates: [closestParking.longitude, closestParking.latitude] }],
+        waypoints: [{ coordinates: [location.longitude, location.latitude] }, { coordinates: [selectedParkingMeter.longitude, selectedParkingMeter.latitude] }],
       })
       .send()
       .then((response) => {
@@ -347,6 +363,7 @@ const Map = () => {
       const adjustedLeft = left - dialogWidth / 2 + iconWidth / 2;
       const adjustedTop = top - dialogHeight - iconHeight / 2;
       // End
+      setSelectedParkingMeter(parkingMeter);
       setDialogData({
         ...parkingMeter,
         left: adjustedLeft,
