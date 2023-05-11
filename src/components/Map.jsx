@@ -443,7 +443,7 @@ const Map = () => {
 
     setMap(map);
     return () => map.remove();
-  }, [location, navigation]);
+  }, [location, navigation, parkingData]);
 
   const renderDialog = () => {
     if (!showDialog || !dialogData) return null;
