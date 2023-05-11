@@ -410,7 +410,7 @@ const Map = () => {
     if (parkingData.length >= 0) {
       fetchData();
     }
-  }, [map, location]);
+  }, [location]);
 
   useEffect(() => {
     if (!location) {
