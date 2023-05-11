@@ -138,28 +138,30 @@ const Map = () => {
             });
           }
 
-          if (!map.getSource('route')) {
-            map.addSource('route', {
-              type: 'geojson',
-              data: decodedPolyline,
-            });
+          const drawRoute = () => {
+            if (!map.getSource('route')) {
+              map.addSource('route', {
+                type: 'geojson',
+                data: decodedPolyline,
+              });
 
-            map.addLayer({
-              id: 'route',
-              type: 'line',
-              source: 'route',
-              layout: {
-                'line-join': 'round',
-                'line-cap': 'round',
-              },
-              paint: {
-                'line-color': '#1db7dd',
-                'line-width': 7,
-              },
-            });
-          } else {
-            map.getSource('route').setData(decodedPolyline);
-          }
+              map.addLayer({
+                id: 'route',
+                type: 'line',
+                source: 'route',
+                layout: {
+                  'line-join': 'round',
+                  'line-cap': 'round',
+                },
+                paint: {
+                  'line-color': '#1db7dd',
+                  'line-width': 7,
+                },
+              });
+            } else {
+              map.getSource('route').setData(decodedPolyline);
+            }
+          };
 
           // Start code for the navigation arrow
           // Add a source for the arrow
@@ -228,7 +230,10 @@ const Map = () => {
               });
             }
           });
-          updateArrowPosition();
+          setInterval(() => {
+            drawRoute();
+            updateArrowPosition();
+          }, 1000);
         });
       });
   };
