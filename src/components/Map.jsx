@@ -8,7 +8,7 @@ const Map = () => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
   const [parkingData, setParkingData] = useState([]);
-  const [closestParking, setClosestParking] = useState(null);
+  // const [closestParking, setClosestParking] = useState(null);
   const [location, setLocation] = useState(null);
 
   const [navigation, setNavigation] = useState(false);
@@ -18,13 +18,46 @@ const Map = () => {
   const [dialogData, setDialogData] = useState(null);
   const [iconDimensions, setIconDimensions] = useState({ width: 0, height: 0 });
 
+  const [selectedParkingMeter, setSelectedParkingMeter] = useState(null);
+
   const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
   const directionsClient = MapboxDirections(client);
 
-  const handleNavigation = () => {
-    setNavigation((prev) => !prev);
+  const fetchData = async () => {
+    const response = await fetch(`https://parkinn-api.azurewebsites.net/api/parking-meters?rows=${1000}`);
+    const data = await response.json();
+    setParkingData(data);
+
+    /* Get the closest parking meter to the user's location
+    -The commented code include the calculation of the closest spot in the fetchData() function wich get all the parking meters in the area and
+    the getDistance() function whitch calculate the distance from the user current location-
+    */
+
+    //  if (!location) return;
+
+    //  const closest = data.reduce((prev, curr) => {
+    //    const prevDistance = getDistance(location.latitude, location.longitude, prev.latitude, prev.longitude);
+    //    const currDistance = getDistance(location.latitude, location.longitude, curr.latitude, curr.longitude);
+    //    return currDistance < prevDistance ? curr : prev;
+    //  });
+
+    //  setClosestParking(closest);
   };
+
+  //  const getDistance = (lat1, lon1, lat2, lon2) => {
+  //    const R = 6371e3;
+  //    const lat1Rad = (lat1 * Math.PI) / 180;
+  //    const lat2Rad = (lat2 * Math.PI) / 180;
+  //    const deltaLat = ((lat2 - lat1) * Math.PI) / 180;
+  //    const deltaLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  //    const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+  //    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  //    return R * c;
+  //  };
+  // End of Getting the closest parking meter to the user's location
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -43,35 +76,6 @@ const Map = () => {
     }
   };
 
-  const fetchData = async () => {
-    const response = await fetch(`https://parkinn-api.azurewebsites.net/api/parking-meters?rows=${1000}`);
-    const data = await response.json();
-    setParkingData(data);
-
-    if (!location) return;
-
-    const closest = data.reduce((prev, curr) => {
-      const prevDistance = getDistance(location.latitude, location.longitude, prev.latitude, prev.longitude);
-      const currDistance = getDistance(location.latitude, location.longitude, curr.latitude, curr.longitude);
-      return currDistance < prevDistance ? curr : prev;
-    });
-
-    setClosestParking(closest);
-  };
-
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3;
-    const lat1Rad = (lat1 * Math.PI) / 180;
-    const lat2Rad = (lat2 * Math.PI) / 180;
-    const deltaLat = ((lat2 - lat1) * Math.PI) / 180;
-    const deltaLon = ((lon2 - lon1) * Math.PI) / 180;
-
-    const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  };
-
   const formatDuration = (durationInSeconds) => {
     const hours = Math.floor(durationInSeconds / 3600);
     const minutes = Math.floor((durationInSeconds % 3600) / 60);
@@ -81,10 +85,15 @@ const Map = () => {
   };
 
   const initNavigation = () => {
+    if (!selectedParkingMeter) {
+      alert('Please select a parking meter first!');
+      return;
+    }
+
     directionsClient
       .getDirections({
         profile: 'driving',
-        waypoints: [{ coordinates: [location.longitude, location.latitude] }, { coordinates: [closestParking.longitude, closestParking.latitude] }],
+        waypoints: [{ coordinates: [location.longitude, location.latitude] }, { coordinates: [selectedParkingMeter.longitude, selectedParkingMeter.latitude] }],
       })
       .send()
       .then((response) => {
@@ -116,30 +125,43 @@ const Map = () => {
                 })),
               },
             });
-          }
-
-          if (!map.getSource('route')) {
-            map.addSource('route', {
-              type: 'geojson',
-              data: decodedPolyline,
-            });
-
-            map.addLayer({
-              id: 'route',
-              type: 'line',
-              source: 'route',
-              layout: {
-                'line-join': 'round',
-                'line-cap': 'round',
-              },
-              paint: {
-                'line-color': '#1db7dd',
-                'line-width': 7,
-              },
-            });
           } else {
-            map.getSource('route').setData(decodedPolyline);
+            map.getSource('parking-data').setData({
+              type: 'FeatureCollection',
+              features: parkingData.map((parking) => ({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [parking.longitude, parking.latitude],
+                },
+              })),
+            });
           }
+
+          const drawRoute = () => {
+            if (!map.getSource('route')) {
+              map.addSource('route', {
+                type: 'geojson',
+                data: decodedPolyline,
+              });
+
+              map.addLayer({
+                id: 'route',
+                type: 'line',
+                source: 'route',
+                layout: {
+                  'line-join': 'round',
+                  'line-cap': 'round',
+                },
+                paint: {
+                  'line-color': '#1db7dd',
+                  'line-width': 7,
+                },
+              });
+            } else {
+              map.getSource('route').setData(decodedPolyline);
+            }
+          };
 
           // Start code for the navigation arrow
           // Add a source for the arrow
@@ -208,7 +230,10 @@ const Map = () => {
               });
             }
           });
-          updateArrowPosition();
+          setInterval(() => {
+            drawRoute();
+            updateArrowPosition();
+          }, 1000);
         });
       });
   };
@@ -228,6 +253,17 @@ const Map = () => {
               },
             })),
           },
+        });
+      } else {
+        map.getSource('parking-data').setData({
+          type: 'FeatureCollection',
+          features: parkingData.map((parking) => ({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [parking.longitude, parking.latitude],
+            },
+          })),
         });
       }
 
@@ -298,51 +334,88 @@ const Map = () => {
           });
         }
       };
-      // end
-      map.on('click', 'parking-layer', (e) => {
-        if (!e.features.length) return;
-
-        const clickedLongitude = e.features[0].geometry.coordinates[0];
-        const clickedLatitude = e.features[0].geometry.coordinates[1];
-
-        const parkingMeter = parkingData.find((pm) => Math.abs(pm.longitude - clickedLongitude) < 1e-6 && Math.abs(pm.latitude - clickedLatitude) < 1e-6);
-
-        if (!parkingMeter) {
-          console.error('No matching parking meter found');
-          return;
-        }
-
-        const point = map.project(e.lngLat);
-        const left = point.x;
-        const top = point.y;
-
-        // Start  */ Calculate the position for the dialog
-        const dialogWidth = 200;
-        const dialogHeight = 120;
-        const iconWidth = iconDimensions.width * 0.2;
-        const iconHeight = iconDimensions.height * 0.2;
-        const adjustedLeft = left - dialogWidth / 2 + iconWidth / 2;
-        const adjustedTop = top - dialogHeight - iconHeight / 2;
-        // End
-        setDialogData({
-          ...parkingMeter,
-          left: adjustedLeft,
-          top: adjustedTop,
-        });
-        setShowDialog(true);
-      });
-
-      map.on('click', (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ['parking-layer'],
-        });
-        if (!features.length) {
-          setShowDialog(false);
-        }
-      });
       updateArrowPosition();
     });
+
+    map.on('click', 'parking-layer', (e) => {
+      if (!e.features.length) return;
+
+      const clickedLongitude = e.features[0].geometry.coordinates[0];
+      const clickedLatitude = e.features[0].geometry.coordinates[1];
+
+      const parkingMeter = parkingData.find((pm) => Math.abs(pm.longitude - clickedLongitude) < 1e-6 && Math.abs(pm.latitude - clickedLatitude) < 1e-6);
+
+      if (!parkingMeter) {
+        console.error('No matching parking meter found');
+        return;
+      }
+
+      const point = map.project(e.lngLat);
+      const left = point.x;
+      const top = point.y;
+
+      // Start  */ Calculate the position for the dialog
+      const dialogWidth = 200;
+      const dialogHeight = 120;
+      const iconWidth = iconDimensions.width * 0.2;
+      const iconHeight = iconDimensions.height * 0.2;
+      const adjustedLeft = left - dialogWidth / 2 + iconWidth / 2;
+      const adjustedTop = top - dialogHeight - iconHeight / 2;
+      // End
+      setSelectedParkingMeter(parkingMeter);
+      setDialogData({
+        ...parkingMeter,
+        left: adjustedLeft,
+        top: adjustedTop,
+      });
+      setShowDialog(true);
+    });
+
+    map.on('click', (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['parking-layer'],
+      });
+      if (!features.length) {
+        setShowDialog(false);
+      }
+    });
   };
+
+  const handleNavigation = () => {
+    if (selectedParkingMeter) {
+      setNavigation((prev) => !prev);
+      if (!navigation) {
+        setShowDialog(false);
+        map.resize();
+        map.flyTo({
+          center: [location.longitude, location.latitude],
+          zoom: 20,
+        });
+      } else {
+        setSelectedParkingMeter(null);
+        setDuration(0);
+        setDistance(0);
+        map.resize();
+        map.flyTo({
+          center: [location.longitude, location.latitude],
+          zoom: 15,
+        });
+
+        if (map.getSource('route')) {
+          map.removeLayer('route');
+          map.removeSource('route');
+        }
+      }
+    } else {
+      alert('Please select a parking meter first!');
+    }
+  };
+
+  useEffect(() => {
+    if (parkingData.length >= 0) {
+      fetchData();
+    }
+  }, [location]);
 
   useEffect(() => {
     if (!location) {
@@ -350,17 +423,18 @@ const Map = () => {
       return;
     }
 
-    if (!parkingData.length || !closestParking) {
-      fetchData();
-      return;
-    }
-
-    if (navigation) {
-      initNavigation();
+    if (parkingData.length >= 0) {
+      if (map) {
+        if (navigation) {
+          initNavigation();
+        } else {
+          initMap();
+        }
+      }
     } else {
-      initMap();
+      fetchData();
     }
-  }, [map, location, parkingData, closestParking, navigation]);
+  }, [map, parkingData, navigation, location]);
 
   useEffect(() => {
     if (!location) return;
@@ -374,7 +448,7 @@ const Map = () => {
 
     setMap(map);
     return () => map.remove();
-  }, [location]);
+  }, [location, navigation, parkingData]);
 
   const renderDialog = () => {
     if (!showDialog || !dialogData) return null;
@@ -400,6 +474,9 @@ const Map = () => {
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
           <button className={`${navigation ? 'hidden' : 'block'} bg-green-500 flex justify-center items-center p-1 w-14 h-14 rounded-full duration-100 border border-gray-500`} onClick={handleNavigation}>
             <p className={`${navigation ? 'hidden' : 'block'}`}>Start</p>
+          </button>
+          <button className={`${navigation ? 'block' : 'hidden'} bg-red-500 flex justify-center items-center p-1 w-14 h-14 rounded-full duration-100 border border-gray-500`} onClick={handleNavigation}>
+            <p className={`${navigation ? 'block' : 'hidden'}`}>Stop</p>
           </button>
         </div>
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
