@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /public/manifest.json
+Disallow: /public/serviceWorkers.js
+Allow: /
