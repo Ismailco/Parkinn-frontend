@@ -4,7 +4,7 @@ import MapboxClient from '@mapbox/mapbox-sdk';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
 import polyline from '@mapbox/polyline';
 
-const Map = () => {
+const Map = ({ coordinates }) => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
   const [parkingData, setParkingData] = useState([]);
@@ -28,38 +28,14 @@ const Map = () => {
     const response = await fetch(`https://parkinn-api.azurewebsites.net/api/parking-meters?rows=${1000}`);
     const data = await response.json();
     setParkingData(data);
-
-    /* Get the closest parking meter to the user's location
-    -The commented code include the calculation of the closest spot in the fetchData() function wich get all the parking meters in the area and
-    the getDistance() function whitch calculate the distance from the user current location-
-    */
-
-    //  if (!location) return;
-
-    //  const closest = data.reduce((prev, curr) => {
-    //    const prevDistance = getDistance(location.latitude, location.longitude, prev.latitude, prev.longitude);
-    //    const currDistance = getDistance(location.latitude, location.longitude, curr.latitude, curr.longitude);
-    //    return currDistance < prevDistance ? curr : prev;
-    //  });
-
-    //  setClosestParking(closest);
   };
 
-  //  const getDistance = (lat1, lon1, lat2, lon2) => {
-  //    const R = 6371e3;
-  //    const lat1Rad = (lat1 * Math.PI) / 180;
-  //    const lat2Rad = (lat2 * Math.PI) / 180;
-  //    const deltaLat = ((lat2 - lat1) * Math.PI) / 180;
-  //    const deltaLon = ((lon2 - lon1) * Math.PI) / 180;
-
-  //    const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
-  //    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  //    return R * c;
-  //  };
-  // End of Getting the closest parking meter to the user's location
-
   const getUserLocation = () => {
+    if (coordinates) {
+      setLocation({ latitude: coordinates[1], longitude: coordinates[0] });
+      return;
+    }
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
