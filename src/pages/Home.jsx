@@ -49,6 +49,7 @@ const Home = () => {
       // The coordinates are in the 'center' property of the first feature
       if (data.features && data.features.length > 0) {
         setCoordinates(data.features[0].center);
+        console.log(coordinates);
       } else {
         console.error('No features found for this city');
       }
