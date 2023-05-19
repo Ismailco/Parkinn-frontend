@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "dev.pages.parkinn_frontend.pwa.twa",
+                     "sha256_cert_fingerprints": ["D4:DE:44:A9:2F:60:35:37:61:EE:A2:C0:66:CC:CC:D3:62:FE:8B:85:6F:4E:30:EC:4B:59:ED:63:2E:F3:88:03"] }
+      }
+]
