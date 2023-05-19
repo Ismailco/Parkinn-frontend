@@ -1,6 +1,6 @@
 [{
         "relation": ["delegate_permission/common.handle_all_urls"],
-        "target" : { "namespace": "android_app", "package_name": "dev.pages.parkinn_frontend.pwa.twa",
-                     "sha256_cert_fingerprints": ["C4:EF:B8:D5:41:32:4A:C7:AE:9E:BE:13:70:4B:D2:BA:F5:03:A0:A2:85:B9:65:6B:2A:26:6D:81:28:0B:D9:3A"] }
+        "target" : { "namespace": "android_app", "package_name": "dev.pages.parkinn_frontend.twa",
+                     "sha256_cert_fingerprints": ["A4:6F:07:35:F1:76:48:23:F1:22:67:9C:66:37:AF:A6:C9:68:56:50:D0:CF:FA:34:8C:DD:D0:2F:AD:9B:A6:32"] }
       }
 ]
