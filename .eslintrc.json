@@ -10,7 +10,11 @@
   },
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "serviceworker": true
+  },
+  "globals": {
+    "workbox": "readonly"
   },
   "settings": {
     "react": {

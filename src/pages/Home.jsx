@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import GpsBar from '../components/GpsBar';
-import Map from '../components/Map';
 import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [city, setCity] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [selectedCity, setSelectedCity] = useState(null);
+  // const [selectedCity, setSelectedCity] = useState(null);
   const [coordinates, setCoordinates] = useState(null);
 
   const navigate = useNavigate();
@@ -40,7 +39,7 @@ const Home = () => {
   };
 
   const handleSuggestionClick = async (suggestion) => {
-    setSelectedCity(suggestion);
+    // setSelectedCity(suggestion);
     setCity(suggestion);
     setSuggestions([]);
 
@@ -61,8 +60,6 @@ const Home = () => {
   };
 
   const handleSearch = () => {
-    // console.log('Search for', selectedCity);
-    // console.log('Coordinates', coordinates);
     navigate('/map', { state: { coordinates: coordinates } });
   };
 
@@ -85,7 +82,6 @@ const Home = () => {
         </div>
         <p className="w-72 text-center py-5"> Established in 2024, has already helped 1 million motorists find affordable and dependable parking!</p>
       </div>
-      {/* {selectedCity && coordinates && <Map coordinates={coordinates} />} */}
       <GpsBar />
     </div>
   );
