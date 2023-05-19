@@ -60,11 +60,11 @@ const Home = () => {
 
   return (
     <div className="text-white w-full flex flex-col justify-between items-center text-xl">
-      <p className="w-52 text-center mt-5 mb-10 font-merriweatherSans">Your reliable solution for stress free Parking </p>
-      <div className="flex flex-col justify-center items-center my-10">
-        <div>
-          <input type="text" className="text-center my-10 p-2 border rounded-full bg-gray-100 text-gray-500" value={city} onChange={handleInputChange} />
-          <button className="relative -left-10 bg-[#F69E1A] py-4 px-2 rounded-full shadow shadow-black active:shadow-none text-black">
+      <p className="w-52 text-center font-merriweatherSans my-5">Your reliable solution for stress free Parking </p>
+      <div className="flex flex-col justify-center items-center my-5">
+        <div className="my-5">
+          <input type="text" className="text-center p-2 border rounded-full bg-gray-100 text-gray-500" value={city} onChange={handleInputChange} />
+          <button className="relative -left-10 bg-[#F69E1A] py-4 px-2 -mr-10 rounded-full shadow shadow-black active:shadow-none text-black">
             <i className="fal fa-search fa-2xl"></i>
           </button>
         </div>
@@ -75,9 +75,9 @@ const Home = () => {
             </div>
           ))}
         </div>
-        <p className="w-72 text-center my-10"> Established in 2024, has already helped 1 million motorists find affordable and dependable parking!</p>
+        <p className="w-72 text-center py-5"> Established in 2024, has already helped 1 million motorists find affordable and dependable parking!</p>
       </div>
-      {selectedCity && coordinates && <Map coordinates={coordinates} />}
+      {/* {selectedCity && coordinates && <Map coordinates={coordinates} />} */}
       <GpsBar />
     </div>
   );

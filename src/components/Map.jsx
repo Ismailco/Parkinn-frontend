@@ -442,9 +442,9 @@ const Map = ({ coordinates }) => {
     <>
       <div className="w-full h-screen absolute" ref={mapContainer}></div>
       {renderDialog()}
-      <div className="z-10 flex w-full justify-st items-center">
-        <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
-          <p className="text-gray-600 text-xs">From current Location</p>
+      <div className="z-10 flex w-full self-end justify-center text-center items-center">
+        <div className="flex flex-col items-center justify-start py-4 w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
+          <p className="text-gray-600 text-xs">To destination</p>
           <p className="text-gray-600 text-xs">{formatDuration(duration)}</p>
         </div>
         <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
@@ -455,7 +455,7 @@ const Map = ({ coordinates }) => {
             <p className={`${navigation ? 'block' : 'hidden'}`}>Stop</p>
           </button>
         </div>
-        <div className="flex flex-col items-center justify-center w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
+        <div className="flex flex-col items-center justify-start py-4 w-full h-16 bg-[#D9D9D9] font-merriweatherSans font-bold">
           <p className="text-gray-600 text-xs">Distance</p>
           <p className="text-gray-600 text-xs">{distance.toFixed(2)} m</p>
         </div>

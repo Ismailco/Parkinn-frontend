@@ -8,11 +8,10 @@ const App = () => {
   return (
     <div>
       <BrowserRouter>
-        <div className="min-h-[100dvh] flex flex-col justify-between items-center bg-[#2418EB]">
+        <div className="min-h-screen grid bg-[#2418EB]">
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
-            {/* <Route path="/map/:latitude/:longitude" element={<Map />} /> */}
             <Route path="/map" element={<Map />} />
           </Routes>
         </div>
