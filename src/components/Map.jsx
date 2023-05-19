@@ -7,7 +7,7 @@ import polyline from '@mapbox/polyline';
 
 const Map = () => {
   const locationSearch = useLocation();
-  const coordinates = locationSearch.state.coordinates;
+  const coordinates = locationSearch.state?.coordinates;
 
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
