@@ -1,14 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
 import MapboxClient from '@mapbox/mapbox-sdk';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
 import polyline from '@mapbox/polyline';
 
-const Map = ({ coordinates }) => {
+const Map = () => {
+  const locationSearch = useLocation();
+  const coordinates = locationSearch.state.coordinates;
+
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
   const [parkingData, setParkingData] = useState([]);
-  // const [closestParking, setClosestParking] = useState(null);
   const [location, setLocation] = useState(null);
 
   const [navigation, setNavigation] = useState(false);

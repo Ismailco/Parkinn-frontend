@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import GpsBar from '../components/GpsBar';
 import Map from '../components/Map';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [city, setCity] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [coordinates, setCoordinates] = useState(null);
+
+  const navigate = useNavigate();
 
   const fetchCitySuggestions = async (query) => {
     if (!query) {
@@ -49,7 +52,6 @@ const Home = () => {
       // The coordinates are in the 'center' property of the first feature
       if (data.features && data.features.length > 0) {
         setCoordinates(data.features[0].center);
-        console.log(coordinates);
       } else {
         console.error('No features found for this city');
       }
@@ -58,13 +60,19 @@ const Home = () => {
     }
   };
 
+  const handleSearch = () => {
+    // console.log('Search for', selectedCity);
+    // console.log('Coordinates', coordinates);
+    navigate('/map', { state: { coordinates: coordinates } });
+  };
+
   return (
     <div className="text-white w-full flex flex-col justify-between items-center text-xl">
       <p className="w-52 text-center font-merriweatherSans my-5">Your reliable solution for stress free Parking </p>
       <div className="flex flex-col justify-center items-center my-5">
         <div className="my-5">
           <input type="text" className="text-center p-2 border rounded-full bg-gray-100 text-gray-500" value={city} onChange={handleInputChange} />
-          <button className="relative -left-10 bg-[#F69E1A] py-4 px-2 -mr-10 rounded-full shadow shadow-black active:shadow-none text-black">
+          <button className="relative -left-10 bg-[#F69E1A] py-4 px-2 -mr-10 rounded-full shadow shadow-black active:shadow-none text-black" onClick={handleSearch}>
             <i className="fal fa-search fa-2xl"></i>
           </button>
         </div>
