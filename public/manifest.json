@@ -4,7 +4,7 @@
   "description": "ParkInn App",
   "lang": "en-US",
   "start_url": "/",
-  "scope": "https://parkinn-frontend.pages.dev/",
+  "scope": "https://pwa.parkinn-frontend.pages.dev/",
   "orientation": "portrait",
   "background_color": "#2418EB",
   "display": "standalone",
