@@ -66,5 +66,20 @@
       "type": "image/png",
       "description": "Navigation Screen"
     }
-  ]
+  ],
+  "dir": "ltr",
+  "display_override": [
+    "standalone",
+    "fullscreen",
+    "window-controls-overlay",
+    "minimal-ui"
+  ],
+  "categories": [
+    "productivity",
+    "travel",
+    "utilities"
+  ],
+  "edge_side_panel": {
+    "preferred_width": 96
+  }
 }
