@@ -1,23 +1,23 @@
-// const CACHE_NAME = 'packinn-cache-v1';
-// const urlsToCache = ['/', '/index.html', '/.js$/', '/.jsx$/', '/.css$/', '/.png$/', '/.jpg$/', '/.svg$/', '/.woff$/', '/.woff2$/', '/.ttf$/', '/.otf$/', '/.eot$/', '/.ico$/', '/.json$/'];
-// /* eslint-disable no-undef */
-// globalThis.addEventListener('install', (event) => {
-//   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)));
-// });
-// globalThis.addEventListener('fetch', (event) => {
-//   event.respondWith(
-//     caches.match(event.request).then((response) => {
-//       if (response) {
-//         return response;
-//       }
-//       return fetch(event.request);
-//     })
-//   );
-// });
-// globalThis.addEventListener('install', (event) => {
-//   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)));
-//   globalThis.skipWaiting();
-// });
+const CACHE_NAME = 'packinn-cache-v1';
+const urlsToCache = ['../dist/index.html', '../dist/logo.svg', '../dist/assets/apple-icon-180-e27d7f0f.png', '../dist/assets/index-2443fa3f.css', '../dist/assets/index-79c974eb.js', '../dist/icons/apple-icon-180.png', '../dist/icons/manifest-icon-192.maskable.png', '../dist/icons/manifest-icon-512.maskable.png', '../dist/img/gps.png', '../dist/img/home.png', '../dist/img/location.png', '../dist/img/NavLogo.svg', '../dist/img/parkingIcon.png'];
+/* eslint-disable no-undef */
+globalThis.addEventListener('install', (event) => {
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)));
+});
+globalThis.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      if (response) {
+        return response;
+      }
+      return fetch(event.request);
+    })
+  );
+});
+globalThis.addEventListener('install', (event) => {
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)));
+  globalThis.skipWaiting();
+});
 
 const CACHE = 'pwabuilder-offline-page';
 
