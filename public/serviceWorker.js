@@ -1,4 +1,3 @@
-const CACHE_NAME = 'packinn-cache-v1';
 const CACHE = 'pwabuilder-offline-page';
 
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
@@ -13,7 +12,7 @@ globalThis.addEventListener('message', (event) => {
 });
 
 globalThis.addEventListener('install', async (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.add(offlineFallbackPage)));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(offlineFallbackPage)));
 });
 
 if (workbox.navigationPreload.isSupported()) {

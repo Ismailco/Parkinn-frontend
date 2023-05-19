@@ -10,7 +10,8 @@
   },
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "serviceworker": true
   },
   "settings": {
     "react": {
