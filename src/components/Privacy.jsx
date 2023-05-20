@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Privacy = () => {
   return (
     <div className="text-white bg-gray-400/50 w-full flex flex-col justify-start items-center">
