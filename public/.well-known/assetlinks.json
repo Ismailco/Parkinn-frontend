@@ -1,6 +1,10 @@
-[{
-        "relation": ["delegate_permission/common.handle_all_urls"],
-        "target" : { "namespace": "android_app", "package_name": "dev.pages.parkinn_frontend.twa",
-                     "sha256_cert_fingerprints": ["A4:6F:07:35:F1:76:48:23:F1:22:67:9C:66:37:AF:A6:C9:68:56:50:D0:CF:FA:34:8C:DD:D0:2F:AD:9B:A6:32"] }
-      }
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "live.park_inn.twa",
+      "sha256_cert_fingerprints": ["8B:61:63:2E:F4:2F:D9:8B:E9:38:F6:0D:14:08:CC:87:0C:83:B9:02:F8:73:FF:D1:32:85:EC:49:6E:F7:AF:B9"]
+    }
+  }
 ]
