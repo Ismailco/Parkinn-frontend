@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
 import MapboxClient from '@mapbox/mapbox-sdk';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
+// import MapboxGeolocateControl from 'mapbox-gl-geolocate-control';
 import polyline from '@mapbox/polyline';
 
 const Map = () => {
@@ -22,8 +23,6 @@ const Map = () => {
   const [iconDimensions, setIconDimensions] = useState({ width: 0, height: 0 });
 
   const [selectedParkingMeter, setSelectedParkingMeter] = useState(null);
-
-  const [userBearing, setUserBearing] = useState(0);
 
   const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
@@ -46,8 +45,6 @@ const Map = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setLocation({ latitude, longitude });
-          setUserBearing(position.coords.heading || 0);
-          map.rotateTo(userBearing, { duration: 0 });
         },
         (error) => {
           console.error('Error obtaining location:', error);
@@ -216,7 +213,6 @@ const Map = () => {
           setInterval(() => {
             drawRoute();
             updateArrowPosition();
-            map.rotateTo(userBearing, { duration: 0 });
           }, 1000);
         });
       });
@@ -428,8 +424,36 @@ const Map = () => {
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [location.longitude, location.latitude],
       zoom: 18,
-      bearing: userBearing,
     });
+
+    // Start experimental code for the geolocation control
+    // Add geolocation control to the map
+    const geolocateControl = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+    });
+    map.addControl(geolocateControl);
+
+    // Geolocation control event
+    geolocateControl.on('geolocate', (e) => {
+      const lon = e.coords.longitude;
+      const lat = e.coords.latitude;
+      setLocation({ latitude: lat, longitude: lon });
+
+      // Rotate the map according to user direction
+      const heading = e.coords.heading;
+      if (heading) {
+        map.rotateTo(-heading, { duration: 1000 });
+      }
+
+      // If in navigation mode, redraw the route
+      if (navigation) {
+        initNavigation();
+      }
+    });
+    // End
 
     setMap(map);
     return () => map.remove();
