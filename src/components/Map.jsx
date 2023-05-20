@@ -23,8 +23,6 @@ const Map = () => {
 
   const [selectedParkingMeter, setSelectedParkingMeter] = useState(null);
 
-  const [userBearing, setUserBearing] = useState(0);
-
   const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const client = MapboxClient({ accessToken });
   const directionsClient = MapboxDirections(client);
@@ -46,8 +44,6 @@ const Map = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setLocation({ latitude, longitude });
-          setUserBearing(position.coords.heading || 0);
-          map.rotateTo(userBearing, { duration: 0 });
         },
         (error) => {
           console.error('Error obtaining location:', error);
@@ -216,7 +212,6 @@ const Map = () => {
           setInterval(() => {
             drawRoute();
             updateArrowPosition();
-            map.rotateTo(userBearing, { duration: 0 });
           }, 1000);
         });
       });
@@ -428,7 +423,6 @@ const Map = () => {
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [location.longitude, location.latitude],
       zoom: 18,
-      bearing: userBearing,
     });
 
     setMap(map);
