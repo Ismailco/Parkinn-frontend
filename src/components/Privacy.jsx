@@ -10,7 +10,7 @@ const Privacy = () => {
           Last updated: [19/05/2023]
           <br />
           <br />
-          Welcome to ParkInn, a service provided by [Your Company Name] ("we", "our", or "us").
+          Welcome to ParkInn, a service provided by ParkInn (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;).
           <br />
           <br />
           Our Privacy Policy explains how we treat your personal data and protect your privacy when you use our services. By using our services, you agree to the terms of this Privacy Policy and your continued use signifies your acceptance of this policy. If you do not agree with this policy, you should not use our services.
